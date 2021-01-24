@@ -37,6 +37,7 @@ class _WrittenArtifact (_MultiAbilityArtifact):
         elif self.language != 'Common':
             self.value = round(self.value * 0.90)
 
+
 class Scroll (_WrittenArtifact):
 
     """A scroll, containing up to 5 mental abilities."""
@@ -81,6 +82,7 @@ class Book (_WrittenArtifact):
     def _numabilities(self):
         return bonus25()
 
+
 def CompleteBook(abilityname=None, maxIIQ=None, element=None, language=None):
 
     """ Create a book that contains exactly one ability in multiple levels, starting with IIQ 1.
@@ -100,10 +102,3 @@ def CompleteBook(abilityname=None, maxIIQ=None, element=None, language=None):
 
     maxability = PhysicalOrMentalAbility(abilityname, maxIIQ, element)
     return Book([force_level(maxability, iiq) for iiq in range(1, maxability.IIQ)] + [maxability], language)
-
-    """A book that contains exactly one ability in multiple levels, starting with IIQ 1.
-
-    By default, the ability will be chosen randomly, any physical or mental ability,
-    and the maximum IIQ included will be at least IIQ 3 (bonus5).
-
-    """
