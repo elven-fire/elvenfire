@@ -33,7 +33,7 @@ class TestScroll(unittest.TestCase):
         for language in languages:
             s = Scroll(language=language)
             self.assertEqual(s.language, language)
-            self.assert_(language in str(s))
+            self.assertTrue(language in str(s))
 
     def testinvalidlanguage(self):
         """Provide an invalid language, to generate an error."""
@@ -94,7 +94,7 @@ class TestBook(unittest.TestCase):
         for language in languages:
             s = Book(language=language)
             self.assertEqual(s.language, language)
-            self.assert_(language in str(s))
+            self.assertTrue(language in str(s))
             value = round(sum([a.AC for a in s.abilities]) / 10)
             if language == 'Common':
                 self.assertEqual(s.value, value)
@@ -112,6 +112,39 @@ class TestBook(unittest.TestCase):
         """Ensure that Books can be randomly generated without errors."""
         for i in range(100):
             Book()
+
+
+class TestCompleteBook(unittest.TestCase):
+
+    def testspecificbook(self):
+        """Create a fully specified complete book."""
+        book = CompleteBook('Storm', 5, 'Water', 'Hob/Goblin')
+        self.assertEqual(book.name,
+            "Book of (Storm: Water 1; Storm: Water 2; Storm: Water 3; Storm: Water 4; Storm: Water 5): Hob/Goblin")
+
+    def testinvalidability(self):
+        """Give an invalid ability name, to verify error."""
+        self.assertRaises(AbilityError, CompleteBook, "NotAnAbility")
+
+    def testinvalidIIQ(self):
+        """Give an invalid max IIQ, to verify error."""
+        self.assertRaises(AbilityError, CompleteBook, maxIIQ=10)
+
+    def testmaxIIQ(self):
+        """Give a max IIQ only, verify no errors."""
+        for i in range(100):
+            book = CompleteBook(maxIIQ=5)
+            self.assertEqual(len(book.abilities), 5)
+
+    def testrandom(self):
+        """Ensure a random book is never less than 3 abilities, and is always the same root ability and element."""
+        for i in range(100):
+            book = CompleteBook()
+            maxIIQ = len(book.abilities)
+            self.assertGreaterEqual(maxIIQ, 3)
+            sample = book.abilities[0]
+            expected = Book([PhysicalOrMentalAbility(sample.name, iiq, sample.element) for iiq in range(1, maxIIQ+1)], book.language)
+            self.assertEqual(book.name, expected.name)
 
 
 if __name__ == '__main__':

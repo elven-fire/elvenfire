@@ -1,3 +1,4 @@
+import copy
 import random
 
 from elvenfire import bonus5, bonus25
@@ -35,6 +36,7 @@ class _WrittenArtifact (_MultiAbilityArtifact):
             self.value = round(self.value * 0.75)
         elif self.language != 'Common':
             self.value = round(self.value * 0.90)
+
 
 class Scroll (_WrittenArtifact):
 
@@ -81,3 +83,22 @@ class Book (_WrittenArtifact):
         return bonus25()
 
 
+def CompleteBook(abilityname=None, maxIIQ=None, element=None, language=None):
+
+    """ Create a book that contains exactly one ability in multiple levels, starting with IIQ 1.
+
+    By default, the ability will be chosen randomly, any physical or mental ability,
+    and the maximum IIQ included will be at least IIQ 3 (bonus5).
+
+    """
+
+    def force_level(maxability, IIQ):
+        ability = copy.deepcopy(maxability)
+        ability.IIQ = IIQ
+        return ability
+
+    if maxIIQ is None:
+        maxIIQ = max(3, bonus5())
+
+    maxability = PhysicalOrMentalAbility(abilityname, maxIIQ, element)
+    return Book([force_level(maxability, iiq) for iiq in range(1, maxability.IIQ)] + [maxability], language)
